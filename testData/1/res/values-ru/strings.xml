@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MeasureUI</string>
+    <string name="sectionCaption">Номер сечения</string>
+    <string name="btnNextCaption">Далее &gt;&gt;</string>
+    <string name="btnExitCaption">Выход</string>
+    <string name="channelCaption">Канал %d</string>
+</resources>

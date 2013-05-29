@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="app_name">MeasureUI</string>
+    <string name="sectionCaption">Section Number</string>
+    <string name="btnNextCaption">Next &gt;&gt;</string>
+    <string name="btnExitCaption">Exit</string>
+    <string name="channelCaption">Channel %d</string>
+<string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="material_kind_dictionary">Справочник \"Материалы\"</string>
+    
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+<string name="db_shortname">Наименование:</string>
+    <string name="db_materialtype">Тип материала:</string>
+    <string name="db_material_dictionary">Справочник материалов</string>
+</resources>

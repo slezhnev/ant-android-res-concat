@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+              android:layout_height="match_parent"
+        >
+
+    <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center_horizontal"
+            android:measureWithLargestChild="false">
+
+        <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:text="New Text"
+                android:id="@+id/textView"
+                style="@android:style/TextAppearance.Large"
+                android:layout_span="2"
+                android:layout_gravity="center_horizontal"/>
+    </TableRow>
+
+    <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            >
+
+        <ListView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/channelsListView"
+                android:layout_column="0"
+                />
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="1"
+                >
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sectionCaption"
+                    android:id="@+id/lblSection"
+                    android:layout_gravity="center_horizontal|top"
+                    android:gravity="center_horizontal"
+                    style="@android:style/TextAppearance.Large"/>
+
+            <EditText
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/editText"
+                    android:layout_gravity="center|top"
+                    android:inputType="number"
+                    android:gravity="center"/>
+
+        </LinearLayout>
+    </TableRow>
+
+    <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btnExitCaption"
+                android:id="@+id/btnExit"
+                android:background="@drawable/return_button"
+                style="@style/CommandButton"
+                android:layout_column="0"
+                android:layout_weight="1"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btnNextCaption"
+                android:id="@+id/btnNext"
+                style="@style/CommandButton"
+                android:background="@drawable/command_button"
+                android:layout_column="1"
+                />
+
+    </TableRow>
+
+</TableLayout>
+
