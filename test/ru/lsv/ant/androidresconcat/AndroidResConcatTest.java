@@ -22,10 +22,10 @@ public class AndroidResConcatTest {
      * Результат работы таска над тестовыми данными
      */
     private final String[] executeResult = {
-            "Copying \"%2\\layout\\db_activity_main.xml\" to \"%1\\layout\\db_activity_main.xml\"",
-            "Copying \"%2\\layout\\db_materialdic_listitem.xml\" to \"%1\\layout\\db_materialdic_listitem.xml\"",
-            "Copying \"%2\\layout\\db_materialdic_main.xml\" to \"%1\\layout\\db_materialdic_main.xml\"",
-            "Copying \"%2\\layout\\db_materialtype_edit.xml\" to \"%1\\layout\\db_materialtype_edit.xml\"",
+            "Copying \"F:\\Lsv\\JavaProjects\\ant-android-res-concat\\testData\\2\\res\\layout\\db_activity_main.xml\" to \"F:\\Lsv\\JavaProjects\\ant-android-res-concat\\testData\\1\\res\\layout\\db_activity_main.xml\"",
+            "Copying \"F:\\Lsv\\JavaProjects\\ant-android-res-concat\\testData\\2\\res\\layout\\db_materialdic_listitem.xml\" to \"F:\\Lsv\\JavaProjects\\ant-android-res-concat\\testData\\1\\res\\layout\\db_materialdic_listitem.xml\"",
+            "Copying \"F:\\Lsv\\JavaProjects\\ant-android-res-concat\\testData\\2\\res\\layout\\db_materialdic_main.xml\" to \"F:\\Lsv\\JavaProjects\\ant-android-res-concat\\testData\\1\\res\\layout\\db_materialdic_main.xml\"",
+            "Copying \"F:\\Lsv\\JavaProjects\\ant-android-res-concat\\testData\\2\\res\\layout\\db_materialtype_edit.xml\" to \"F:\\Lsv\\JavaProjects\\ant-android-res-concat\\testData\\1\\res\\layout\\db_materialtype_edit.xml\"",
             "Merging \"%1\\menu\\main.xml\" and \"%2\\menu\\main.xml\"",
             "",
             "Merging \"%1\\values\\dimens.xml\" and \"%2\\values\\dimens.xml\"",

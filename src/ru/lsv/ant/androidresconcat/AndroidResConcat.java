@@ -44,7 +44,7 @@ public class AndroidResConcat extends Task {
     /**
      * XML file extension
      */
-    private String[] xmlExt = {"xml"};
+    // private String[] xmlExt = {"xml"};
     /**
      * Factory для работы с XPath
      */
@@ -60,7 +60,7 @@ public class AndroidResConcat extends Task {
     private Collection<File> extractFileList(File file) {
         Collection<File> files = null;
         if (file != null) {
-            files = FileUtils.listFiles(file, xmlExt, true);
+            files = FileUtils.listFiles(file, null, true);
         } else {
             throw new BuildException("\"to\" or \"from\" must be specifyed");
         }
@@ -131,12 +131,21 @@ public class AndroidResConcat extends Task {
             // Достаем "урезанное" имя файла
             String fileName = extractResPart(currFile.getAbsolutePath());
             // Проверяем - если это файл ресурса - то обрабатываем
-            if (fileName != null) {
+            // Дополнительно проверяем что файл не начинается с prefixTo (в этом
+            // случае с ним НИЧЕГО делать не надо!
+            if ((fileName != null) &&
+                    (!FilenameUtils.getName(fileName).toLowerCase()
+                            .startsWith(prefixTo.toLowerCase()))) {
                 // Проверяем на то, что такой файл есть в to
-                // Дополнительно проверяем что файл не начинается с prefixFrom
+                // Дополнительно проверяем, что это xml. Иначе - мы его просто
+                // копируем (см.ниже)
+                // Дополнительно - если файл начинается с prefixFrom - то мы его
+                // должны просто скопировать (см.ниже)
                 if ((filesToH.containsKey(fileName)) &&
                         (!FilenameUtils.getName(fileName).toLowerCase()
-                                .startsWith(prefixFrom.toLowerCase()))) {
+                                .startsWith(prefixFrom.toLowerCase())) &&
+                        ("xml".equals(FilenameUtils.getExtension(fileName)
+                                .toLowerCase()))) {
                     // Значит мы нашли файл, который есть и там, и там
                     // И он не начинается с prefixFrom
                     // Значит его надо мержить....
@@ -151,7 +160,7 @@ public class AndroidResConcat extends Task {
                     try {
                         fromDoc = parseXML(currFile);
                     } catch (Exception e) {
-                        throw new BuildException("Cannot parse \"" +
+                        throw new BuildException("Cannot parse   \"" +
                                 currFile.getAbsolutePath() + "\"");
                     }
                     System.out.println("Merging \"" +
@@ -197,22 +206,28 @@ public class AndroidResConcat extends Task {
                     System.out.println();
                 } else {
                     // Просто копируем файл
-                    // Поскольку его либо нет, либо он начинается с prefixFrom и
-                    // должен быть тупо перекопирован
-                    System.out.println("Copying \"" +
-                            currFile.getAbsolutePath() + "\" to \"" +
-                            toFile.getAbsolutePath() + File.separatorChar +
-                            "res" + File.separatorChar + fileName + "\"");
-                    try {
-                        FileUtils.copyFile(currFile,
-                                new File(toFile.getAbsolutePath() +
-                                        File.separatorChar + "res" +
-                                        File.separatorChar + fileName));
-                    } catch (IOException e) {
-                        throw new BuildException("Cannot copy \"" +
+                    // Копируются только файлы, которые начинаются с prefixFrom
+                    File fileTo = new File(toFile.getAbsolutePath() +
+                            File.separatorChar + "res" + File.separatorChar +
+                            fileName);
+                    // Копировать мы будем в 2-х случаях:
+                    // 1. Если файла нет
+                    // 2. Если файл начинается с prefixFrom
+                    if ((!toFile.exists()) ||
+                            (FilenameUtils.getName(fileName).toLowerCase()
+                                    .startsWith(prefixFrom.toLowerCase()))) {
+                        System.out.println("Copying \"" +
                                 currFile.getAbsolutePath() + "\" to \"" +
                                 toFile.getAbsolutePath() + File.separatorChar +
-                                fileName + "\"");
+                                "res" + File.separatorChar + fileName + "\"");
+                        try {
+                            FileUtils.copyFile(currFile, fileTo);
+                        } catch (IOException e) {
+                            throw new BuildException("Cannot copy \"" +
+                                    currFile.getAbsolutePath() + "\" to \"" +
+                                    toFile.getAbsolutePath() +
+                                    File.separatorChar + fileName + "\"");
+                        }
                     }
                 }
             }

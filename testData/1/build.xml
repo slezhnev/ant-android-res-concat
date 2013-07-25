@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" ?>
+<project name="android_merge" default="merge" basedir=".">
+	
+	<taskdef name="android.res.merge" classname="ru.lsv.ant.androidresconcat.AndroidResConcat"/>
+    
+	<property name="to" value="F:/Lsv/JavaProjects/ant-android-res-concat/testData/1/"/>
+	<property name="prefixto" value="ui_"/>
+	<property name="from" value="F:/Lsv/JavaProjects/ant-android-res-concat/testData/2/"/>
+	<property name="prefixfrom" value="db_"/>	
+	
+	<target name="merge">
+		<android.res.merge to="${to}" prefixto="${prefixto}" from="${from}" prefixfrom="${prefixfrom}"/>
+	</target>	
+
+</project>
