@@ -72,17 +72,18 @@ public class AndroidResConcat extends Task {
      * 
      * @param fileNameIn
      *            Имя файла
-     * @return Вырезанное имя файла или исходное, если в нем нет "res"
+     * @return Вырезанное имя файла или null, если в нем нет "res"
      */
     private String extractResPart(String fileNameIn) {
         String separator = "res" + File.separatorChar;
         String fileName = fileNameIn;
         int resPos = fileName.indexOf(separator);
         if (resPos > 0) {
-            fileName = fileName.substring(resPos + separator.length(),
+            return fileName.substring(resPos + separator.length(),
                     fileName.length());
+        } else {
+            return null;
         }
-        return fileName;
     }
 
     /**
@@ -118,89 +119,101 @@ public class AndroidResConcat extends Task {
         HashMap<String, File> filesToH = new HashMap<String, File>();
         for (Iterator<File> files = filesTo.iterator(); files.hasNext();) {
             File currFile = files.next();
-            filesToH.put(extractResPart(currFile.getAbsolutePath()), currFile);
+            String tmpF = extractResPart(currFile.getAbsolutePath());
+            // Добавляем только файлы ресурсов
+            if (tmpF != null) {
+                filesToH.put(tmpF, currFile);
+            }
         }
         // Поехали по from...
         for (Iterator<File> files = filesFrom.iterator(); files.hasNext();) {
             File currFile = files.next();
             // Достаем "урезанное" имя файла
             String fileName = extractResPart(currFile.getAbsolutePath());
-            // Проверяем на то, что такой файл есть в to
-            // Дополнительно проверяем что файл не начинается с prefixFrom
-            if ((filesToH.containsKey(fileName)) &&
-                    (!FilenameUtils.getName(fileName).toLowerCase()
-                            .startsWith(prefixFrom.toLowerCase()))) {
-                // Значит мы нашли файл, который есть и там, и там
-                // И он не начинается с prefixFrom
-                // Значит его надо мержить....
-                Document fromDoc;
-                Document toDoc;
-                try {
-                    toDoc = parseXML(filesToH.get(fileName));
-                } catch (Exception e) {
-                    throw new BuildException("Cannot parse \"" +
-                            filesToH.get(fileName).getAbsolutePath() + "\"");
-                }
-                try {
-                    fromDoc = parseXML(currFile);
-                } catch (Exception e) {
-                    throw new BuildException("Cannot parse \"" +
-                            currFile.getAbsolutePath() + "\"");
-                }
-                System.out.println("Merging \"" +
-                        filesToH.get(fileName).getAbsolutePath() + "\" and \"" +
-                        currFile.getAbsolutePath() + "\"");
-                // Пройдемся по toDoc - удалим ВСЕ вершины, у которых есть name,
-                // начинающийся с prefixFrom
-                for (int i = 0; i < toDoc.getChildNodes().getLength(); i++) {
-                    deletePrefixed(toDoc, toDoc.getChildNodes().item(i),
-                            prefixFrom);
-                }
-                // Поедем по fromDoc - и будем переносить в toDoc
-                for (int i = 0; i < fromDoc.getChildNodes().getLength(); i++) {
-                    mergeNode(toDoc, fromDoc.getChildNodes().item(i), prefixTo,
-                            prefixFrom);
-                }
-                // Сохраняем
-                Transformer transformer;
-                try {
-                    transformer = TransformerFactory.newInstance()
-                            .newTransformer();
-                } catch (Exception e) {
-                    throw new BuildException("Cannot save changed xml to \"" +
+            // Проверяем - если это файл ресурса - то обрабатываем
+            if (fileName != null) {
+                // Проверяем на то, что такой файл есть в to
+                // Дополнительно проверяем что файл не начинается с prefixFrom
+                if ((filesToH.containsKey(fileName)) &&
+                        (!FilenameUtils.getName(fileName).toLowerCase()
+                                .startsWith(prefixFrom.toLowerCase()))) {
+                    // Значит мы нашли файл, который есть и там, и там
+                    // И он не начинается с prefixFrom
+                    // Значит его надо мержить....
+                    Document fromDoc;
+                    Document toDoc;
+                    try {
+                        toDoc = parseXML(filesToH.get(fileName));
+                    } catch (Exception e) {
+                        throw new BuildException("Cannot parse \"" +
+                                filesToH.get(fileName).getAbsolutePath() + "\"");
+                    }
+                    try {
+                        fromDoc = parseXML(currFile);
+                    } catch (Exception e) {
+                        throw new BuildException("Cannot parse \"" +
+                                currFile.getAbsolutePath() + "\"");
+                    }
+                    System.out.println("Merging \"" +
                             filesToH.get(fileName).getAbsolutePath() +
-                            "\" - creating of transforming factory failed");
-                }
-                Result output = new StreamResult(filesToH.get(fileName));
-                Source input = new DOMSource(toDoc);
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                transformer.setOutputProperty(
-                        "{http://xml.apache.org/xslt}indent-amount", "4");
-                try {
-                    transformer.transform(input, output);
-                } catch (TransformerException e) {
-                    throw new BuildException("Cannot save changed xml to \"" +
-                            filesToH.get(fileName).getAbsolutePath() + "\"");
-                }
-                System.out.println();
-            } else {
-                // Просто копируем файл
-                // Поскольку его либо нет, либо он начинается с prefixFrom и
-                // должен быть тупо перекопирован
-                System.out.println("Copying \"" + currFile.getAbsolutePath() +
-                        "\" to \"" + toFile.getAbsolutePath() +
-                        File.separatorChar + "res" + File.separatorChar +
-                        fileName + "\"");
-                try {
-                    FileUtils.copyFile(currFile,
-                            new File(toFile.getAbsolutePath() +
-                                    File.separatorChar + "res" +
-                                    File.separatorChar + fileName));
-                } catch (IOException e) {
-                    throw new BuildException("Cannot copy \"" +
+                            "\" and \"" + currFile.getAbsolutePath() + "\"");
+                    // Пройдемся по toDoc - удалим ВСЕ вершины, у которых есть
+                    // name,
+                    // начинающийся с prefixFrom
+                    for (int i = 0; i < toDoc.getChildNodes().getLength(); i++) {
+                        deletePrefixed(toDoc, toDoc.getChildNodes().item(i),
+                                prefixFrom);
+                    }
+                    // Поедем по fromDoc - и будем переносить в toDoc
+                    for (int i = 0; i < fromDoc.getChildNodes().getLength(); i++) {
+                        mergeNode(toDoc, fromDoc.getChildNodes().item(i),
+                                prefixTo, prefixFrom);
+                    }
+                    // Сохраняем
+                    Transformer transformer;
+                    try {
+                        transformer = TransformerFactory.newInstance()
+                                .newTransformer();
+                    } catch (Exception e) {
+                        throw new BuildException(
+                                "Cannot save changed xml to \"" +
+                                        filesToH.get(fileName)
+                                                .getAbsolutePath() +
+                                        "\" - creating of transforming factory failed");
+                    }
+                    Result output = new StreamResult(filesToH.get(fileName));
+                    Source input = new DOMSource(toDoc);
+                    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                    transformer.setOutputProperty(
+                            "{http://xml.apache.org/xslt}indent-amount", "4");
+                    try {
+                        transformer.transform(input, output);
+                    } catch (TransformerException e) {
+                        throw new BuildException(
+                                "Cannot save changed xml to \"" +
+                                        filesToH.get(fileName)
+                                                .getAbsolutePath() + "\"");
+                    }
+                    System.out.println();
+                } else {
+                    // Просто копируем файл
+                    // Поскольку его либо нет, либо он начинается с prefixFrom и
+                    // должен быть тупо перекопирован
+                    System.out.println("Copying \"" +
                             currFile.getAbsolutePath() + "\" to \"" +
                             toFile.getAbsolutePath() + File.separatorChar +
-                            fileName + "\"");
+                            "res" + File.separatorChar + fileName + "\"");
+                    try {
+                        FileUtils.copyFile(currFile,
+                                new File(toFile.getAbsolutePath() +
+                                        File.separatorChar + "res" +
+                                        File.separatorChar + fileName));
+                    } catch (IOException e) {
+                        throw new BuildException("Cannot copy \"" +
+                                currFile.getAbsolutePath() + "\" to \"" +
+                                toFile.getAbsolutePath() + File.separatorChar +
+                                fileName + "\"");
+                    }
                 }
             }
         }
