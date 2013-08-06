@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="ru.encotes">
+
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17"/>
+	<uses-permission android:name="android.permission.INTERNET"/>
+    <application android:allowBackup="true" android:icon="@drawable/ic_launcher" android:label="@string/db_app_name" android:theme="@android:style/Theme.Holo">
+        <activity android:label="@string/db_app_name" android:name=".armid6.db.android.ObjectInspectionActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        
+        <activity android:label="@string/db_activity_title_material_kind_select" android:name=".armid6.db.android.MaterialKindSelectActivity">
+        </activity>
+        <activity android:label="@string/db_activity_title_material_kind_select" android:name=".armid6.db.android.MeasureSelectActivity">
+        </activity>
+        
+        <activity android:label="@string/db_activity_title_material_kind_edit" android:name=".armid6.db.android.MateriaKindEditActivity">
+        </activity>
+        <activity android:label="@string/db_activity_title_material_type_select" android:name=".armid6.db.android.MaterialTypeSelectActivity">
+        </activity>
+        <activity android:label="@string/db_activity_title_material_type_edit" android:name=".armid6.db.android.MaterialTypeEditActivity">
+        </activity>
+        <activity android:label="@string/db_activity_title_sensor_type_select" android:name=".armid6.db.android.SensorTypeSelectActivity">
+        </activity>
+        <activity android:label="@string/db_activity_title_sensor_type_edit" android:name=".armid6.db.android.SensorTypeEditActivity">
+        </activity>
+        <activity android:label="@string/db_activity_title_sensor_select" android:name=".armid6.db.android.SensorSelectActivity">
+        </activity>
+        <activity android:label="@string/db_activity_title_sensor_edit" android:name=".armid6.db.android.SensorEditActivity">
+        </activity>
+        <activity android:label="@string/db_activity_title_sensor_edit" android:name=".in5102.measureui.android.MeasureSummaryActivity">
+        </activity>
+        <activity android:label="@string/db_activity_title_sensor_edit" android:name=".in5102.measureui.android.FittingSummaryActivity">
+        </activity>
+    <activity android:name=".in5102.measureui.android.FittingChannelActivity"/>
+        <activity android:name=".in5102.measureui.android.SingleComponentActivity"/>
+    </application>
+
+</manifest>

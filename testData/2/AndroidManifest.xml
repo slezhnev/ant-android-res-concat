@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="ru.encotes">
+
+    <uses-sdk android:minSdkVersion="15"/>
+    <application android:icon="@drawable/ui_mainicon" android:label="@string/ui_app_name" android:theme="@style/AppBaseTheme">
+        <activity android:label="@string/ui_app_name" android:name=".in5102.measureui.android.StarterActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".in5102.measureui.android.FittingSummaryActivity"/>
+        <activity android:name=".in5102.measureui.android.FittingChannelActivity"/>
+        <activity android:name=".in5102.measureui.android.SingleComponentActivity"/>
+        <activity android:name=".in5102.measureui.android.MeasureSummaryActivity"/>
+        <activity android:name=".armid6.db.android.SensorSelectActivity"/>
+    </application>
+</manifest>

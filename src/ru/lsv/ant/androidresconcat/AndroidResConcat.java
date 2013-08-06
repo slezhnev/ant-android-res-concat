@@ -7,7 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -112,6 +114,16 @@ public class AndroidResConcat extends Task {
      */
     @Override
     public void execute() throws BuildException {
+        // Первое - будем проверять наличие AndroidManifest.xml в fromFile и
+        // toFile
+        File fromAndroidManifest = new File(fromFile.getAbsolutePath() +
+                File.separator + "AndroidManifest.xml");
+        File toAndroidManifest = new File(toFile.getAbsolutePath() +
+                File.separator + "AndroidManifest.xml");
+        if (fromAndroidManifest.exists() && toAndroidManifest.exists()) {
+            // Если оба манифеста есть - то объединяем их
+            concatManifest(fromAndroidManifest, toAndroidManifest);
+        }
         // Формируем файлы для обработки в "to"
         Collection<File> filesTo = extractFileList(toFile);
         Collection<File> filesFrom = extractFileList(fromFile);
@@ -213,7 +225,7 @@ public class AndroidResConcat extends Task {
                     // Копировать мы будем в 2-х случаях:
                     // 1. Если файла нет
                     // 2. Если файл начинается с prefixFrom
-                    if ((!toFile.exists()) ||
+                    if ((!fileTo.exists()) ||
                             (FilenameUtils.getName(fileName).toLowerCase()
                                     .startsWith(prefixFrom.toLowerCase()))) {
                         System.out.println("Copying \"" +
@@ -232,6 +244,169 @@ public class AndroidResConcat extends Task {
                 }
             }
         }
+    }
+
+    /**
+     * Выполняет объединение манифестов <br/>
+     * Манифесты будут объединены при условиях: <br/>
+     * 1. Совпадают атрибуты package у manifest'ов СУЩЕСТВЕННОЕ ограничение: <br/>
+     * В toManifest из fromManifest будут переносится только те activity,
+     * которых нет во from и имеющих ТОЛЬКО атрибут name! Если activity имеет
+     * еще какие-то атрибуты - она не будет перенесена
+     * 
+     * @param fromAndroidManifest
+     *            Откуда
+     * @param toAndroidManifest
+     *            Куда
+     */
+    private void concatManifest(File fromAndroidManifest, File toAndroidManifest) {
+        Document fromDoc;
+        Document toDoc;
+        try {
+            toDoc = parseXML(toAndroidManifest);
+        } catch (Exception e) {
+            throw new BuildException("Cannot parse \"" +
+                    toAndroidManifest.getAbsolutePath() + "\"");
+        }
+        try {
+            fromDoc = parseXML(fromAndroidManifest);
+        } catch (Exception e) {
+            throw new BuildException("Cannot parse   \"" +
+                    fromAndroidManifest.getAbsolutePath() + "\"");
+        }
+        System.out.println("Merging manifest \"" +
+                toAndroidManifest.getAbsolutePath() + "\" and \"" +
+                fromAndroidManifest.getAbsolutePath() + "\"");
+        // Первое - проверяем, чтобы package совпадал
+        NodeList fromNL;
+        try {
+            fromNL = (NodeList) xPath.compile("manifest").evaluate(fromDoc,
+                    XPathConstants.NODESET);
+            if (fromNL.getLength() != 1) {
+                throw new BuildException(
+                        "Cannot find ONE <manifest> element on \"" +
+                                fromAndroidManifest.getAbsolutePath());
+            }
+        } catch (XPathExpressionException e) {
+            throw new BuildException(
+                    "Exception while finding <manifest> element on \"" +
+                            fromAndroidManifest.getAbsolutePath());
+        }
+        NodeList toNL;
+        try {
+            toNL = (NodeList) xPath.compile("manifest").evaluate(toDoc,
+                    XPathConstants.NODESET);
+            if (toNL.getLength() != 1) {
+                throw new BuildException(
+                        "Cannot find ONE <manifest> element on \"" +
+                                toAndroidManifest.getAbsolutePath());
+            }
+        } catch (XPathExpressionException e) {
+            throw new BuildException(
+                    "Exception while finding <manifest> element on \"" +
+                            toAndroidManifest.getAbsolutePath());
+        }
+        Node packageFrom = fromNL.item(0).getAttributes()
+                .getNamedItem("package");
+        Node packageTo = toNL.item(0).getAttributes().getNamedItem("package");
+        if ((packageFrom == null) ||
+                (packageFrom.getNodeValue() == null) ||
+                (packageTo == null) ||
+                (packageTo.getNodeValue() == null) ||
+                (!packageFrom.getNodeValue().toLowerCase()
+                        .equals(packageTo.getNodeValue().toLowerCase()))) {
+            throw new BuildException("Different packages in \"" +
+                    toAndroidManifest.getAbsolutePath() + " and " +
+                    fromAndroidManifest.getAbsolutePath());
+        }
+        // Получаем /manifest/application из toDoc
+        Node application;
+        try {
+            NodeList toAppl = (NodeList) xPath.compile("manifest/application")
+                    .evaluate(toDoc, XPathConstants.NODESET);
+            if (toAppl.getLength() != 1) {
+                throw new BuildException(
+                        "Cannot find ONE <manifest/application> element on \"" +
+                                toAndroidManifest.getAbsolutePath());
+            }
+            application = toAppl.item(0);
+        } catch (XPathExpressionException e) {
+            throw new BuildException(
+                    "Exception while finding <manifest> element on \"" +
+                            toAndroidManifest.getAbsolutePath());
+        }
+
+        // Получаем все activity через xpath
+        NodeList nl;
+        try {
+            nl = (NodeList) xPath.compile("manifest/application/activity")
+                    .evaluate(fromDoc, XPathConstants.NODESET);
+        } catch (XPathExpressionException e) {
+            throw new BuildException(
+                    "Cannot evaluate XPath |manifest/application/activity| on \"" +
+                            fromAndroidManifest.getAbsolutePath() +
+                            "\" - XPathExpressionException - " + e.getMessage());
+        }
+        // Формируем список activity в toDoc. Поиск через XPath (с указанием
+        // значения атрибута) с чего-то не работает
+        Set<String> toActivities = new HashSet<String>();
+        try {
+            toNL = (NodeList) xPath.compile("manifest/application/activity")
+                    .evaluate(toDoc, XPathConstants.NODESET);
+            for (int i = 0; i < toNL.getLength(); i++) {
+                if ((toNL.item(i).getAttributes() != null) &&
+                        (toNL.item(i).getAttributes()
+                                .getNamedItem("android:name") != null)) {
+                    toActivities.add(toNL.item(i).getAttributes()
+                            .getNamedItem("android:name").getNodeValue());
+                }
+            }
+        } catch (XPathExpressionException e) {
+            throw new BuildException(
+                    "Cannot evaluate XPath |manifest/application/activity on \"" +
+                            toAndroidManifest.getAbsolutePath() +
+                            "\" - XPathExpressionException - " + e.getMessage());
+        }
+        // Поехали по полученным вершинам
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            NamedNodeMap nl1 = node.getAttributes();
+            // Проверяем на длину и наличие name
+            if ((nl1.getLength() == 1) &&
+                    ("android:name".equals(nl1.item(0).getNodeName()
+                            .toLowerCase()))) {
+                // Ищем соответствие в to
+                if (!toActivities.contains(nl1.item(0).getNodeValue())) {
+                    // Тут ничего нету - поедем добавлять
+                    System.out.println("Adding activity - " +
+                            nl1.item(0).getNodeValue());
+                    Node imported = toDoc.importNode(node, true);
+                    application.appendChild(imported);
+                }
+            }
+        }
+        //
+        // Сохраняем
+        Transformer transformer;
+        try {
+            transformer = TransformerFactory.newInstance().newTransformer();
+        } catch (Exception e) {
+            throw new BuildException("Cannot save changed xml to \"" +
+                    toAndroidManifest.getAbsolutePath() +
+                    "\" - creating of transforming factory failed");
+        }
+        Result output = new StreamResult(toAndroidManifest);
+        Source input = new DOMSource(toDoc);
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(
+                "{http://xml.apache.org/xslt}indent-amount", "4");
+        try {
+            transformer.transform(input, output);
+        } catch (TransformerException e) {
+            throw new BuildException("Cannot save changed xml to \"" +
+                    toAndroidManifest.getAbsolutePath() + "\"");
+        }
+        System.out.println();
     }
 
     /**
@@ -280,6 +455,7 @@ public class AndroidResConcat extends Task {
                 } else {
                     System.out.println("Found duplicated node - \"" +
                             getFullXPath(item, null) + "\"");
+                    return;
                 }
             }
         } else {
@@ -360,16 +536,16 @@ public class AndroidResConcat extends Task {
      * @return Сформированное ПОЛНОЕ XPath описание
      */
     private StringBuffer getFullXPath(Node item, StringBuffer in) {
-        StringBuffer res;
-        if (in == null) {
-            res = new StringBuffer(item.getNodeName()).insert(0, "/");
-        } else {
-            res = in.insert(0, item.getNodeName()).insert(0, "/");
-        }
+        StringBuffer res = new StringBuffer(item.getNodeName());
         NamedNodeMap nl = item.getAttributes();
         for (int i = 0; i < nl.getLength(); i++) {
             res.append("[@").append(nl.item(i).getNodeName()).append("=\'")
                     .append(nl.item(i).getNodeValue()).append("\']");
+        }
+        if (in == null) {
+            res = res.insert(0, "/");
+        } else {
+            res = in.insert(0, res).insert(0, "/");
         }
         if ((item.getParentNode() != null) &&
                 (item.getParentNode().getNodeType() != Node.DOCUMENT_NODE)) {
