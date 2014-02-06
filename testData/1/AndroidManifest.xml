@@ -36,6 +36,12 @@
         </activity>
     <activity android:name=".in5102.measureui.android.FittingChannelActivity"/>
         <activity android:name=".in5102.measureui.android.SingleComponentActivity"/>
+    <activity android:label="@string/ui_app_name" android:name=".in5102.measureui.android.StarterActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

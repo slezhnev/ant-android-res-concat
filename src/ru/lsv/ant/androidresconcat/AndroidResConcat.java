@@ -370,18 +370,21 @@ public class AndroidResConcat extends Task {
         // Поехали по полученным вершинам
         for (int i = 0; i < nl.getLength(); i++) {
             Node node = nl.item(i);
-            NamedNodeMap nl1 = node.getAttributes();
-            // Проверяем на длину и наличие name
-            if ((nl1.getLength() == 1) &&
-                    ("android:name".equals(nl1.item(0).getNodeName()
-                            .toLowerCase()))) {
-                // Ищем соответствие в to
-                if (!toActivities.contains(nl1.item(0).getNodeValue())) {
-                    // Тут ничего нету - поедем добавлять
-                    System.out.println("Adding activity - " +
-                            nl1.item(0).getNodeValue());
-                    Node imported = toDoc.importNode(node, true);
-                    application.appendChild(imported);
+            if ((node.getChildNodes().getLength() == 0) ||
+                    ((node.getChildNodes().getLength() == 1) && (node
+                            .getChildNodes().item(0).getNodeType() == Node.TEXT_NODE))) {
+                // Добавляем ТОЛЬКО те activity, у которых унутре нету ничего
+                Node androidName = node.getAttributes().getNamedItem(
+                        "android:name");
+                if (androidName != null) {
+                    // Ищем соответствие в to
+                    if (!toActivities.contains(androidName.getNodeValue())) {
+                        // Тут ничего нету - поедем добавлять
+                        System.out.println("Adding activity - " +
+                                androidName.getNodeValue());
+                        Node imported = toDoc.importNode(node, true);
+                        application.appendChild(imported);
+                    }
                 }
             }
         }

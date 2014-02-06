@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="ru.encotes"
+          android:versionCode="1"
+          android:versionName="1.0">
+
+    <uses-sdk android:minSdkVersion="15"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permisson.READ_EXTERNAL_STORAGE" />
+    <application
+            android:label="@string/ui_app_name"
+            android:icon="@drawable/ui_mainicon"
+            android:theme="@style/AppBaseTheme"
+            android:hardwareAccelerated="true"
+            android:largeHeap="true">
+        <activity
+                android:name=".in5102.measureui.android.StarterActivity"
+                android:screenOrientation="landscape"
+                android:label="@string/ui_app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".in5102.measureui.android.FittingSummaryActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.FittingItemActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.MeasureSummaryActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.SelectModeActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.TemperaturesActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".armid6.db.android.SensorSelectActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.PointSelectActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.StressParamsActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.StartTimesActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".armid6.db.android.MeasureSelectActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.CalculationParamsActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".armid6.db.android.MaterialKindSelectActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.MeasureDetailActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.EchoSignalActivity"
+                android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.PremeasureParamsActivity"
+                android:screenOrientation="landscape">
+        </activity>
+    </application>
+</manifest>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="ru.encotes">
+
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17"/>
+	<uses-permission android:name="android.permission.INTERNET"/>
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permisson.READ_EXTERNAL_STORAGE"/>
+    
+    <instrumentation android:name="pl.polidea.instrumentation.PolideaInstrumentationTestRunner" android:targetPackage="ru.encotes"/>
+    
+    
+    <application android:allowBackup="true" android:hardwareAccelerated="true" android:icon="@drawable/ic_launcher" android:label="@string/db_app_name" android:largeHeap="true" android:theme="@android:style/Theme.Holo">
+		<uses-library android:name="android.test.runner"/>        
+        <activity android:label="@string/db_app_name" android:name=".armid6.db.android.ObjectInspectionActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        
+		<activity android:name=".armid6.db.android.MaterialKindSelectActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.MeasureSelectActivity">
+        </activity>
+        
+        <activity android:name=".armid6.db.android.MaterialKindEditActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.MaterialTypeSelectActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.MaterialTypeEditActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.SensorTypeSelectActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.SensorTypeEditActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.SensorSelectActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.SensorEditActivity">
+        </activity>
+        <activity android:name=".in5102.measureui.android.MeasureSummaryActivity">
+        </activity>
+        <activity android:name=".in5102.measureui.android.FittingSummaryActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.ObjectTypeSelectActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.ObjectEditActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.InspectionEditActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.ObjectTypeEditActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.DBPathSelectActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.DeviceSettingsActivity">
+        </activity>
+        <activity android:name=".armid6.db.android.DataImportActivity">
+        </activity>
+        
+    <provider android:authorities="ru.encotes.initfileprovider" android:exported="true" android:name="ru.encotes.armid6.db.utils.InitModulesContentProvider"/>    
+    <activity android:name=".in5102.measureui.android.FittingItemActivity" android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.SelectModeActivity" android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.TemperaturesActivity" android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.PointSelectActivity" android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.StressParamsActivity" android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.StartTimesActivity" android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.CalculationParamsActivity" android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.MeasureDetailActivity" android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.EchoSignalActivity" android:screenOrientation="landscape">
+        </activity>
+        <activity android:name=".in5102.measureui.android.PremeasureParamsActivity" android:screenOrientation="landscape">
+        </activity>
+    </application>
+	
+	</manifest>
